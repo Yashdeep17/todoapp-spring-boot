@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do App</title>
+</head>
+<body>
+<h2>To-Do List</h2>
+
+<input id="taskInput" />
+<button onclick="addTask()">Add</button>
+
+<ul id="taskList"></ul>
+
+<script>
+function loadTasks() {
+  fetch("/api/tasks")
+    .then(res => res.json())
+    .then(data => {
+      const ul = document.getElementById("taskList");
+      ul.innerHTML = "";
+      data.forEach(t => {
+        ul.innerHTML += `
+          <li>
+            ${t.status ? "✓" : ""} ${t.title}
+            <button onclick="complete(${t.id})">Done</button>
+            <button onclick="del(${t.id})">Delete</button>
+          </li>`;
+      });
+    });
+}
+
+function addTask() {
+  const title = document.getElementById("taskInput").value;
+  fetch("/api/tasks?title=" + title, { method: "POST" })
+    .then(loadTasks);
+}
+
+function complete(id) {
+  fetch("/api/tasks/" + id, { method: "PUT" })
+    .then(loadTasks);
+}
+
+function del(id) {
+  fetch("/api/tasks/" + id, { method: "DELETE" })
+    .then(loadTasks);
+}
+
+loadTasks();
+</script>
+</body>
+</html>
