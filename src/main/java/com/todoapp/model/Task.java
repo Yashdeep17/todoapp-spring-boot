@@ -3,28 +3,57 @@ package com.todoapp.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tasks")
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String title;
-    private boolean status;
+    private boolean completed;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Task() {}
 
-    public Task(String title, boolean status) {
+    public Task(String title, boolean completed, User user) {
         this.title = title;
-        this.status = status;
+        this.completed = completed;
+        this.user = user;
     }
 
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public boolean isStatus() { return status; }
+    // getters & setters
+    public Long getId() {
+        return id;
+    }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

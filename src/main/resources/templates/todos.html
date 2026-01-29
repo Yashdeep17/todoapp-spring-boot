@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>📝 To-Do List</h2>
+
+    <div class="input-group">
+        <input id="taskInput" type="text" placeholder="Enter a task" />
+        <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+function loadTasks() {
+    fetch("/api/tasks")
+        .then(res => res.json())
+        .then(data => {
+            const ul = document.getElementById("taskList");
+            ul.innerHTML = "";
+
+            data.forEach(task => {
+                const li = document.createElement("li");
+                if (task.status) li.classList.add("completed");
+
+                const span = document.createElement("span");
+                span.textContent = task.title;
+
+                const actions = document.createElement("div");
+                actions.className = "actions";
+
+                const doneBtn = document.createElement("button");
+                doneBtn.textContent = "Done";
+                doneBtn.onclick = () => completeTask(task.id);
+
+                const delBtn = document.createElement("button");
+                delBtn.textContent = "Delete";
+                delBtn.className = "delete";
+                delBtn.onclick = () => deleteTask(task.id);
+
+                actions.appendChild(doneBtn);
+                actions.appendChild(delBtn);
+
+                li.appendChild(span);
+                li.appendChild(actions);
+                ul.appendChild(li);
+            });
+        });
+}
+
+function addTask() {
+    const input = document.getElementById("taskInput");
+    const title = input.value.trim();
+    if (!title) return;
+
+    fetch("/api/tasks?title=" + encodeURIComponent(title), {
+        method: "POST"
+    }).then(() => {
+        input.value = "";
+        loadTasks();
+    });
+}
+
+function completeTask(id) {
+    fetch("/api/tasks/" + id, { method: "PUT" })
+        .then(loadTasks);
+}
+
+function deleteTask(id) {
+    fetch("/api/tasks/" + id, { method: "DELETE" })
+        .then(loadTasks);
+}
+
+loadTasks();
+</script>
+
+</body>
+</html>
