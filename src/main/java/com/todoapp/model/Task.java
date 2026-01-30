@@ -1,5 +1,7 @@
 package com.todoapp.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,9 +14,19 @@ public class Task {
     private String title;
     private boolean completed;
 
+    // 🔥 LINK TASK TO USER
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // 🔥 VERY IMPORTANT
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Task() {}
 
@@ -29,28 +41,24 @@ public class Task {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
     public User getUser() {
         return user;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public void setUser(User user) {

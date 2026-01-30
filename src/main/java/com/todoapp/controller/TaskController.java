@@ -45,7 +45,7 @@ public ResponseEntity<?> addTask(@RequestParam String title, Authentication auth
 
 
 @PutMapping("/{id}")
-public ResponseEntity<?> complete(@PathVariable int id) {
+public ResponseEntity<?> complete(@PathVariable Long id) {
     boolean updated = service.completeTask(id);
     if (!updated) {
         return ResponseEntity.status(404).body("Task not found");
@@ -55,7 +55,7 @@ public ResponseEntity<?> complete(@PathVariable int id) {
 
 
 @DeleteMapping("/{id}")
-public ResponseEntity<?> delete(@PathVariable int id) {
+public ResponseEntity<?> delete(@PathVariable Long id) {
     boolean deleted = service.deleteTask(id);
     if (!deleted) {
         return ResponseEntity.status(404).body("Task not found");

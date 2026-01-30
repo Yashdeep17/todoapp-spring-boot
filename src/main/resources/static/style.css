@@ -78,3 +78,28 @@ li.completed span {
 .actions button:hover {
     opacity: 0.9;
 }
+
+.filters a.active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    margin-left: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #b02a37;
+}
+
+.date {
+    font-size: 12px;
+    color: #888;
+    margin-left: 10px;
+}

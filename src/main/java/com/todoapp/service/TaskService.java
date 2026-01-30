@@ -32,7 +32,7 @@ public class TaskService {
     }
     
 
-    public boolean completeTask(int id) {
+    public boolean completeTask(Long id) {
         return repo.findById(id).map(task -> {
             task.setCompleted(true);
             repo.save(task);
@@ -41,7 +41,7 @@ public class TaskService {
     }
     
 
-    public boolean deleteTask(int id) {
+    public boolean deleteTask(Long id) {
         if (!repo.existsById(id)) {
             return false;
         }
