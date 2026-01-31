@@ -9,57 +9,46 @@
 <div class="container">
     <h2>📝 To-Do List</h2>
 
-    <form action="/todos" method="post">
-        <input type="text" name="title" placeholder="Enter a task" required>
+    <form action="/todos" method="post" class="todo-form">
+        <input
+            type="text"
+            id="taskInput"
+            name="title"
+            placeholder="Add a new task..."
+            required
+        />
     
-        <!-- 🔥 ADD THIS -->
-        <input type="hidden" name="filter" th:value="${filter}">
-    
-        <button type="submit">Add</button>
+        <button id="addBtn" disabled>Add</button>
     </form>
+    
     
 
     <div class="filters">
         <a th:href="@{/todos}"
-           th:classappend="${filter == null} ? 'active' : ''">All</a> |
+           th:classappend="${filter == null} ? 'active' : ''">All</a> 
     
         <a th:href="@{/todos(filter='pending')}"
-           th:classappend="${filter == 'pending'} ? 'active' : ''">Pending</a> |
+           th:classappend="${filter == 'pending'} ? 'active' : ''">Pending</a> 
     
         <a th:href="@{/todos(filter='completed')}"
            th:classappend="${filter == 'completed'} ? 'active' : ''">Completed</a>
     </div>   
 
-    <ul>
-        <li th:each="todo : ${todos}">
-            <form th:action="@{/todos/toggle}" method="post" style="display:inline;">
-                <input type="hidden" name="taskId" th:value="${todo.id}">
-                <input type="hidden" name="filter" th:value="${filter}">
-                <button type="submit"
-                        th:text="${todo.completed ? 'Undo' : 'Done'}">
-                </button>
-            </form>
-            
-            <form th:action="@{/todos/delete}"
-      method="post"
-      style="display:inline;"
-      onsubmit="return confirmDelete()">
+    <ul id="taskList">
 
-    <input type="hidden" name="taskId" th:value="${todo.id}">
-    <input type="hidden" name="filter" th:value="${filter}">
-
-    <button type="submit" class="delete-btn">
-        Delete
-    </button>
-</form>
-
+        <li th:each="todo : ${todos}" th:attr="data-id=${todo.id}"
+            th:classappend="${todo.completed} ? 'completed' : ''">
     
-            <span th:text="${todo.title}"
-                  th:style="${todo.completed} ? 'text-decoration: line-through;' : ''">
-            </span>
-            
+            <span th:text="${todo.title}"></span>
+    
+            <button onclick="toggleTask(this)">Done</button>
+            <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
+    
         </li>
+    
     </ul>
+    
+    
     
     
 </div>
@@ -133,6 +122,7 @@ loadTasks();
     }
     </script>
     
+    <script src="/js/main.js"></script>
 
 </body>
 </html>

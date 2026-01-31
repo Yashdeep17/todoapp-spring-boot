@@ -103,3 +103,60 @@ li.completed span {
     color: #888;
     margin-left: 10px;
 }
+
+.task-list {
+    list-style: none;
+    padding: 0;
+}
+
+.task-list li {
+    padding: 10px;
+    margin: 8px 0;
+    background: #f5f5f5;
+    border-radius: 6px;
+}
+
+/* ⭐ Completed task style */
+.completed-task .task-title {
+    text-decoration: line-through;
+    color: gray;
+    opacity: 0.6;
+}
+
+/* hover */
+.task-list li:hover {
+    background: #eaeaea;
+}
+
+/* FILTER BUTTONS */
+.filters {
+    margin: 15px 0;
+}
+
+.filters a {
+    text-decoration: none;
+    padding: 6px 14px;
+    margin-right: 8px;
+    border-radius: 20px;
+    background: #e0e0e0;
+    color: black;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+/* hover */
+.filters a:hover {
+    background: #cfcfcf;
+}
+
+/* ⭐ ACTIVE FILTER */
+.filters a.active {
+    background: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+.completed span {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
