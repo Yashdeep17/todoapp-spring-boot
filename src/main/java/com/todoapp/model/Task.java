@@ -28,6 +28,19 @@ public class Task {
         this.createdAt = LocalDateTime.now();
     }
 
+    @Column(nullable = false)
+    private String priority;
+
+
+public String getPriority() {
+    return priority;
+}
+
+public void setPriority(String priority) {
+    this.priority = priority;
+}
+
+
     public Task() {}
 
     public Task(String title, boolean completed, User user) {

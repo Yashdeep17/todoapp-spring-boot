@@ -7,32 +7,54 @@
 <body>
 
 <div class="container">
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+    
     <h2>📝 To-Do List</h2>
 
     <form action="/todos" method="post" class="todo-form">
-        <input
-            type="text"
-            id="taskInput"
-            name="title"
-            placeholder="Add a new task..."
-            required
-        />
+
+        <input type="text" name="title" placeholder="Add task..." required />
     
-        <button id="addBtn" disabled>Add</button>
+        <select name="priority">
+            <option value="HIGH">🔴 High</option>
+            <option value="MEDIUM" selected>🟡 Medium</option>
+            <option value="LOW">🟢 Low</option>
+        </select>
+    
+        <button>Add</button>
     </form>
     
     
+    <input
+    type="text"
+    id="searchInput"
+    placeholder="🔍 Search tasks..."
+    class="search-box"
+    onkeyup="searchTasks()"
+/>
+
 
     <div class="filters">
+
         <a th:href="@{/todos}"
-           th:classappend="${filter == null} ? 'active' : ''">All</a> 
+           th:classappend="${filter == null} ? 'active' : ''">
+            All (<span th:text="${totalCount}"></span>)
+        </a>
     
         <a th:href="@{/todos(filter='pending')}"
-           th:classappend="${filter == 'pending'} ? 'active' : ''">Pending</a> 
+           th:classappend="${filter == 'pending'} ? 'active' : ''">
+            Pending (<span th:text="${pendingCount}"></span>)
+        </a>
     
         <a th:href="@{/todos(filter='completed')}"
-           th:classappend="${filter == 'completed'} ? 'active' : ''">Completed</a>
-    </div>   
+           th:classappend="${filter == 'completed'} ? 'active' : ''">
+            Completed (<span th:text="${completedCount}"></span>)
+        </a>
+    
+    </div>
+    
 
     <ul id="taskList">
 
@@ -43,12 +65,14 @@
     
             <button onclick="toggleTask(this)">Done</button>
             <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
+            <span th:text="${todo.priority}"
+      th:class="'badge ' + ${todo.priority.toLowerCase()}">
+</span>
+
     
         </li>
     
     </ul>
-    
-    
     
     
 </div>

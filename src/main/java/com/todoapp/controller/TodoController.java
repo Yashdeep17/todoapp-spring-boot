@@ -30,48 +30,56 @@ public String getTodos(
         Authentication authentication) {
 
     String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
 
-    User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    List<Task> tasks;
 
-    List<Task> todos;
-
-    if ("completed".equals(filter)) {
-        todos = taskRepository.findByUserAndCompletedOrderByCreatedAtDesc(user, true);
-    } else if ("pending".equals(filter)) {
-        todos = taskRepository.findByUserAndCompletedOrderByCreatedAtDesc(user, false);
+    if ("pending".equals(filter)) {
+        tasks = taskRepository.findByUser(user).stream()
+                .filter(task -> !task.isCompleted())
+                .toList();
+    } else if ("completed".equals(filter)) {
+        tasks = taskRepository.findByUser(user).stream()
+                .filter(Task::isCompleted)
+                .toList();
     } else {
-        todos = taskRepository.findByUserOrderByCreatedAtDesc(user);
-        filter = "all";
+        tasks = taskRepository.findByUser(user);
     }
 
-    model.addAttribute("todos", todos);
+    List<Task> allUserTasks = taskRepository.findByUser(user);
+    long total = allUserTasks.size();
+    long completed = allUserTasks.stream().mapToLong(task -> task.isCompleted() ? 1 : 0).sum();
+    long pending = total - completed;
+
+    model.addAttribute("todos", tasks);
     model.addAttribute("filter", filter);
+
+    // ⭐ add counts
+    model.addAttribute("totalCount", total);
+    model.addAttribute("pendingCount", pending);
+    model.addAttribute("completedCount", completed);
 
     return "todos";
 }
 
 
 
-
 @PostMapping("/todos")
-public String addTodo(@RequestParam String title,
-                      @RequestParam(required = false) String filter,
-                      Authentication authentication) {
+public String addTodo(
+        @RequestParam String title,
+        @RequestParam String priority) {
 
-    String username = authentication.getName();
-    User user = userRepository.findByUsername(username).orElseThrow();
+    Task task = new Task();
+    task.setTitle(title);
+    task.setCompleted(false);
+    task.setPriority(priority);   // ⭐ THIS IS THE KEY LINE
 
-    Task task = new Task(title, false, user);
     taskRepository.save(task);
-
-    // 🔥 Preserve filter after adding
-    if (filter != null && !filter.isEmpty()) {
-        return "redirect:/todos?filter=" + filter;
-    }
 
     return "redirect:/todos";
 }
+
+
 
 
 @PostMapping("/todos/toggle")
