@@ -32,6 +32,9 @@ public String getTodos(
     String username = authentication.getName();
     User user = userRepository.findByUsername(username).orElseThrow();
 
+    model.addAttribute("username", username);
+
+
     List<Task> tasks;
 
     if ("pending".equals(filter)) {
@@ -67,17 +70,24 @@ public String getTodos(
 @PostMapping("/todos")
 public String addTodo(
         @RequestParam String title,
-        @RequestParam String priority) {
+        @RequestParam String priority,
+        Authentication authentication) {
+
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
 
     Task task = new Task();
     task.setTitle(title);
     task.setCompleted(false);
-    task.setPriority(priority);   // ⭐ THIS IS THE KEY LINE
+    task.setPriority(priority);
+
+    task.setUser(user);   // ⭐⭐⭐ MOST IMPORTANT LINE
 
     taskRepository.save(task);
 
     return "redirect:/todos";
 }
+
 
 
 

@@ -47,4 +47,25 @@ public class TaskApiController {
         
         taskRepository.deleteById(id);
     }
+
+    // ======================
+// ADD TASK (AJAX)
+// ======================
+@PostMapping
+public Task addTask(@RequestParam String title,
+                    @RequestParam String priority,
+                    Authentication authentication) {
+
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
+
+    Task task = new Task();
+    task.setTitle(title);
+    task.setPriority(priority);
+    task.setCompleted(false);
+    task.setUser(user);
+
+    return taskRepository.save(task); // return JSON
+}
+
 }

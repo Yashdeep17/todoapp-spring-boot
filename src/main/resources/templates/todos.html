@@ -1,152 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>To-Do App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>TaskFlow</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
 </head>
 <body>
 
-<div class="container">
-    <div class="theme-toggle">
-        <button onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+    <h1>✅ TaskFlow</h1>
+
+    <div class="nav-right">
+        <span th:text="${username}"></span>
+
+        <form action="/logout" method="post">
+            <button class="logout-btn">Logout</button>
+        </form>
     </div>
-    
-    <h2>📝 To-Do List</h2>
-
-    <form action="/todos" method="post" class="todo-form">
-
-        <input type="text" name="title" placeholder="Add task..." required />
-    
-        <select name="priority">
-            <option value="HIGH">🔴 High</option>
-            <option value="MEDIUM" selected>🟡 Medium</option>
-            <option value="LOW">🟢 Low</option>
-        </select>
-    
-        <button>Add</button>
-    </form>
-    
-    
-    <input
-    type="text"
-    id="searchInput"
-    placeholder="🔍 Search tasks..."
-    class="search-box"
-    onkeyup="searchTasks()"
-/>
+</nav>
 
 
-    <div class="filters">
+<!-- ================= LAYOUT ================= -->
+<div class="app-layout">
 
-        <a th:href="@{/todos}"
-           th:classappend="${filter == null} ? 'active' : ''">
-            All (<span th:text="${totalCount}"></span>)
-        </a>
-    
-        <a th:href="@{/todos(filter='pending')}"
-           th:classappend="${filter == 'pending'} ? 'active' : ''">
-            Pending (<span th:text="${pendingCount}"></span>)
-        </a>
-    
-        <a th:href="@{/todos(filter='completed')}"
-           th:classappend="${filter == 'completed'} ? 'active' : ''">
-            Completed (<span th:text="${completedCount}"></span>)
-        </a>
-    
-    </div>
-    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h3>Menu</h3>
 
-    <ul id="taskList">
+        <a th:href="@{/todos}">📋 All</a>
+        <a th:href="@{/todos(filter='pending')}">⏳ Pending</a>
+        <a th:href="@{/todos(filter='completed')}">✅ Completed</a>
+    </aside>
 
-        <li th:each="todo : ${todos}" th:attr="data-id=${todo.id}"
-            th:classappend="${todo.completed} ? 'completed' : ''">
-    
-            <span th:text="${todo.title}"></span>
-    
-            <button onclick="toggleTask(this)">Done</button>
-            <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
-            <span th:text="${todo.priority}"
-      th:class="'badge ' + ${todo.priority.toLowerCase()}">
-</span>
 
-    
-        </li>
-    
-    </ul>
-    
-    
+    <!-- MAIN CONTENT (SCROLLABLE) -->
+    <main class="main-content">
+
+        <div class="container">
+
+            <div class="theme-toggle">
+                <button onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+            </div>
+
+            <h2>📝 To-Do List</h2>
+
+
+            <!-- ADD TASK -->
+            <form onsubmit="addTask(event)" class="todo-form">
+                <input type="text" name="title" placeholder="Add task..." required>
+
+                <select name="priority">
+                    <option value="HIGH">🔴 High</option>
+                    <option value="MEDIUM" selected>🟡 Medium</option>
+                    <option value="LOW">🟢 Low</option>
+                </select>
+
+                <button>Add</button>
+            </form>
+
+
+            <!-- SEARCH -->
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔍 Search tasks..."
+                class="search-box"
+                onkeyup="searchTasks()"
+            />
+
+
+            <!-- FILTERS -->
+            <div class="filters">
+                <a th:href="@{/todos}">All (<span th:text="${totalCount}"></span>)</a>
+                <a th:href="@{/todos(filter='pending')}">Pending (<span th:text="${pendingCount}"></span>)</a>
+                <a th:href="@{/todos(filter='completed')}">Completed (<span th:text="${completedCount}"></span>)</a>
+            </div>
+
+
+            <!-- TASK LIST -->
+            <ul id="taskList" class="task-list">
+
+                <li th:each="todo : ${todos}"
+                    th:attr="data-id=${todo.id}"
+                    th:class="'task-row ' + (${todo.completed} ? 'completed' : '')">
+            
+                    <span class="task-title" th:text="${todo.title}"></span>
+            
+                    <div class="task-actions">
+            
+                        <button class="icon-btn done-btn" onclick="toggleTask(this)">
+                            ✔
+                        </button>
+            
+                        <button class="icon-btn delete-btn" onclick="deleteTask(this)">
+                            🗑
+                        </button>
+            
+                        <span th:text="${todo.priority}"
+                              th:class="'badge ' + ${todo.priority.toLowerCase()}">
+                        </span>
+            
+                    </div>
+            
+                </li>
+            
+            </ul>
+            
+                       
+
+        </div>
+    </main>
+
 </div>
 
-<script>
-function loadTasks() {
-    fetch("/api/tasks")
-        .then(res => res.json())
-        .then(data => {
-            const ul = document.getElementById("taskList");
-            ul.innerHTML = "";
-
-            data.forEach(task => {
-                const li = document.createElement("li");
-                if (task.status) li.classList.add("completed");
-
-                const span = document.createElement("span");
-                span.textContent = task.title;
-
-                const actions = document.createElement("div");
-                actions.className = "actions";
-
-                const doneBtn = document.createElement("button");
-                doneBtn.textContent = "Done";
-                doneBtn.onclick = () => completeTask(task.id);
-
-                const delBtn = document.createElement("button");
-                delBtn.textContent = "Delete";
-                delBtn.className = "delete";
-                delBtn.onclick = () => deleteTask(task.id);
-
-                actions.appendChild(doneBtn);
-                actions.appendChild(delBtn);
-
-                li.appendChild(span);
-                li.appendChild(actions);
-                ul.appendChild(li);
-            });
-        });
-}
-
-function addTask() {
-    const input = document.getElementById("taskInput");
-    const title = input.value.trim();
-    if (!title) return;
-
-    fetch("/api/tasks?title=" + encodeURIComponent(title), {
-        method: "POST"
-    }).then(() => {
-        input.value = "";
-        loadTasks();
-    });
-
-}
-
-function completeTask(id) {
-    fetch("/api/tasks/" + id, { method: "PUT" })
-        .then(loadTasks);
-}
-
-function deleteTask(id) {
-    fetch("/api/tasks/" + id, { method: "DELETE" })
-        .then(loadTasks);
-}
-
-loadTasks();
-</script>
-<script>
-    function confirmDelete() {
-        return confirm("Are you sure you want to delete this task?");
-    }
-    </script>
-    
-    <script src="/js/main.js"></script>
-
+<script src="/js/main.js"></script>
 </body>
 </html>

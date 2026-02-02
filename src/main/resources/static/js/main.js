@@ -1,47 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
-
-    const taskInput = document.getElementById("taskInput");
-    const addBtn = document.getElementById("addBtn");
-
-    function toggleButton() {
-        addBtn.disabled = taskInput.value.trim() === "";
-    }
-
-    taskInput.addEventListener("input", toggleButton);
-
-    taskInput.focus();
-});
-// TOGGLE DONE/UNDO
-function toggleTask(btn) {
-    const li = btn.closest("li");
-    const id = li.dataset.id;
-
-    fetch(`/api/tasks/${id}/toggle`, {
-        method: "PUT"
-    }).then(() => {
-        li.classList.toggle("completed");
-    });
-}
-
-
-// DELETE TASK
-function deleteTask(btn) {
-    if (!confirm("Delete this task?")) return;
-
-    const li = btn.closest("li");
-    const id = li.dataset.id;
-
-    fetch(`/api/tasks/${id}`, {
-        method: "DELETE"
-    }).then(() => {
-        li.remove();
-    });
-}
-
-// ===================
-// DARK MODE TOGGLE
-// ===================
-
+// DARK MODE
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById("themeBtn");
@@ -57,8 +14,6 @@ function toggleTheme() {
     }
 }
 
-
-// load saved theme on start
 window.onload = function () {
     const saved = localStorage.getItem("theme");
 
@@ -68,21 +23,130 @@ window.onload = function () {
     }
 };
 
-// ===================
-// LIVE SEARCH FILTER
-// ===================
 
+// LIVE SEARCH
 function searchTasks() {
     const input = document.getElementById("searchInput").value.toLowerCase();
     const tasks = document.querySelectorAll("#taskList li");
 
     tasks.forEach(task => {
         const text = task.innerText.toLowerCase();
-
-        if (text.includes(input)) {
-            task.style.display = "flex";
-        } else {
-            task.style.display = "none";
-        }
+        task.style.display = text.includes(input) ? "flex" : "none";
     });
+}
+
+function addTask(e) {
+    e.preventDefault();
+
+    const title = document.querySelector("input[name='title']").value;
+    const priority = document.querySelector("select[name='priority']").value;
+
+    fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `title=${encodeURIComponent(title)}&priority=${priority}`
+    })
+    .then(res => res.json())
+    .then(task => {
+
+        const ul = document.getElementById("taskList");
+
+        const li = document.createElement("li");
+        li.dataset.id = task.id;
+
+        li.innerHTML = `
+            <span>${task.title}</span>
+            <button onclick="toggleTask(this)">Done</button>
+            <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
+            <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span>
+        `;
+
+        ul.prepend(li);
+
+        document.querySelector("input[name='title']").value = "";
+    });
+}
+
+/* ======================================
+   DRAG & DROP SORTING
+====================================== */
+
+const sortable = new Sortable(document.getElementById("taskList"), {
+    animation: 250,
+    ghostClass: "drag-ghost",
+    chosenClass: "drag-chosen",
+    dragClass: "drag-dragging",
+
+    onEnd: function () {
+        saveOrder();
+    }
+});
+
+/* send new order to backend */
+function saveOrder() {
+    const ids = [];
+
+    document.querySelectorAll(".task-row").forEach(row => {
+        ids.push(row.dataset.id);
+    });
+
+    // optional AJAX call
+    /*
+    fetch("/todos/reorder", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(ids)
+    });
+    */
+
+    showToast("Order updated");
+}
+
+
+/* ======================================
+   ANIMATIONS
+====================================== */
+
+/* ADD animation */
+function animateAdd(el) {
+    el.classList.add("task-enter");
+    setTimeout(() => el.classList.remove("task-enter"), 300);
+}
+
+/* DELETE animation */
+function animateDelete(el) {
+    el.classList.add("task-exit");
+    setTimeout(() => el.remove(), 250);
+}
+
+/* toggle done */
+function toggleTask(btn) {
+    const row = btn.closest(".task-row");
+    row.classList.toggle("completed");
+    row.classList.add("pulse");
+    setTimeout(()=>row.classList.remove("pulse"),200);
+}
+
+/* delete */
+function deleteTask(btn) {
+    const row = btn.closest(".task-row");
+    animateDelete(row);
+}
+
+
+/* ======================================
+   TOAST NOTIFICATION
+====================================== */
+
+function showToast(text) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = text;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => toast.remove(), 2000);
 }
