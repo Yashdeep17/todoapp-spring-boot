@@ -150,3 +150,27 @@ function showToast(text) {
     setTimeout(() => toast.classList.add("show"), 10);
     setTimeout(() => toast.remove(), 2000);
 }
+
+document.getElementById("addForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // 🔥 stops page reload
+
+    const title = document.getElementById("taskInput").value.trim();
+    const priority = document.getElementById("prioritySelect").value;
+
+    if (!title) return;
+
+    fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: title,
+            priority: priority
+        })
+    })
+    .then(() => {
+        document.getElementById("taskInput").value = "";
+        location.reload(); // simple refresh
+    });
+});

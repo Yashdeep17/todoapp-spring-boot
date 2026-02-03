@@ -48,17 +48,18 @@
 
 
             <!-- ADD TASK -->
-            <form onsubmit="addTask(event)" class="todo-form">
-                <input type="text" name="title" placeholder="Add task..." required>
-
-                <select name="priority">
+            <form id="addForm">
+                <input type="text" id="taskInput" placeholder="Add task..." required>
+            
+                <select id="prioritySelect">
                     <option value="HIGH">🔴 High</option>
                     <option value="MEDIUM" selected>🟡 Medium</option>
                     <option value="LOW">🟢 Low</option>
                 </select>
-
-                <button>Add</button>
+            
+                <button type="submit">Add</button>
             </form>
+            
 
 
             <!-- SEARCH -->
@@ -70,6 +71,22 @@
                 onkeyup="searchTasks()"
             />
 
+            <div class="sort-bar">
+
+                <span>Sort:</span>
+            
+                <a th:href="@{/todos(filter=${filter}, sort='priorityAsc')}"
+                   th:classappend="${sort == 'priorityAsc'} ? 'active-sort' : ''">
+                    🔴 Priority ↑
+                </a>
+            
+                <a th:href="@{/todos(filter=${filter}, sort='priorityDesc')}"
+                   th:classappend="${sort == 'priorityDesc'} ? 'active-sort' : ''">
+                    🟢 Priority ↓
+                </a>
+            
+            </div>
+            
 
             <!-- FILTERS -->
             <div class="filters">

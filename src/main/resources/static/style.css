@@ -378,3 +378,30 @@ button:not(.icon-btn):hover {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* ===== SORT BAR ===== */
+
+.sort-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 12px 0 18px 0;
+}
+
+.sort-bar a {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #2b3648;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.sort-bar a:hover {
+    background: #3b82f6;
+}
+
+.active-sort {
+    background: #3b82f6 !important;
+}

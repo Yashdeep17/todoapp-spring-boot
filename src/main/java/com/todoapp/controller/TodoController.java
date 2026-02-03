@@ -26,46 +26,57 @@ public class TodoController {
     @GetMapping("/todos")
 public String getTodos(
         @RequestParam(required = false) String filter,
+        @RequestParam(required = false) String sort,
         Model model,
         Authentication authentication) {
 
     String username = authentication.getName();
     User user = userRepository.findByUsername(username).orElseThrow();
 
-    model.addAttribute("username", username);
+    List<Task> tasks = taskRepository.findByUser(user);
 
-
-    List<Task> tasks;
-
+    // ===== FILTER =====
     if ("pending".equals(filter)) {
-        tasks = taskRepository.findByUser(user).stream()
-                .filter(task -> !task.isCompleted())
+        tasks = tasks.stream()
+                .filter(t -> !t.isCompleted())
                 .toList();
-    } else if ("completed".equals(filter)) {
-        tasks = taskRepository.findByUser(user).stream()
+    }
+    else if ("completed".equals(filter)) {
+        tasks = tasks.stream()
                 .filter(Task::isCompleted)
                 .toList();
-    } else {
-        tasks = taskRepository.findByUser(user);
     }
+    // ===== SORT BY PRIORITY =====
+if ("priorityAsc".equals(sort)) {
 
+    tasks = tasks.stream()
+            .sorted((a, b) -> priorityOrder(a) - priorityOrder(b))
+            .toList();
+
+}
+else if ("priorityDesc".equals(sort)) {
+
+    tasks = tasks.stream()
+            .sorted((a, b) -> priorityOrder(b) - priorityOrder(a))
+            .toList();
+}
+
+
+    // counts
     List<Task> allUserTasks = taskRepository.findByUser(user);
     long total = allUserTasks.size();
-    long completed = allUserTasks.stream().mapToLong(task -> task.isCompleted() ? 1 : 0).sum();
+    long completed = allUserTasks.stream().filter(Task::isCompleted).count();
     long pending = total - completed;
 
     model.addAttribute("todos", tasks);
     model.addAttribute("filter", filter);
 
-    // ⭐ add counts
     model.addAttribute("totalCount", total);
     model.addAttribute("pendingCount", pending);
     model.addAttribute("completedCount", completed);
 
     return "todos";
 }
-
-
 
 @PostMapping("/todos")
 public String addTodo(
@@ -76,20 +87,12 @@ public String addTodo(
     String username = authentication.getName();
     User user = userRepository.findByUsername(username).orElseThrow();
 
-    Task task = new Task();
-    task.setTitle(title);
-    task.setCompleted(false);
+    Task task = new Task(title, false, user);
     task.setPriority(priority);
-
-    task.setUser(user);   // ⭐⭐⭐ MOST IMPORTANT LINE
-
     taskRepository.save(task);
 
     return "redirect:/todos";
 }
-
-
-
 
 
 @PostMapping("/todos/toggle")
@@ -140,6 +143,27 @@ public String deleteTodo(@RequestParam Long taskId,
     }
 
     return "redirect:/todos";
+}
+
+private int priorityOrder(Task task) {
+    return switch (task.getPriority()) {
+        case "HIGH" -> 1;
+        case "MEDIUM" -> 2;
+        case "LOW" -> 3;
+        default -> 4;
+    };
+}
+
+@PostMapping
+public void addTask(@RequestBody Task task, Authentication authentication) {
+
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
+
+    task.setUser(user);
+    task.setCompleted(false);
+
+    taskRepository.save(task);
 }
 
 
