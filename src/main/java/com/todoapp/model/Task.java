@@ -14,6 +14,17 @@ public class Task {
     private String title;
     private boolean completed;
 
+    @Column(nullable = false)
+    private String status = "TODO";
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
+
     // 🔥 LINK TASK TO USER
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,17 +42,16 @@ public class Task {
     @Column(nullable = false)
     private String priority;
 
+    public String getPriority() {
+        return priority;
+    }
 
-public String getPriority() {
-    return priority;
-}
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
 
-public void setPriority(String priority) {
-    this.priority = priority;
-}
-
-
-    public Task() {}
+    public Task() {
+    }
 
     public Task(String title, boolean completed, User user) {
         this.title = title;

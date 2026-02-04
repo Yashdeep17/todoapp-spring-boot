@@ -52,20 +52,16 @@ public class TaskApiController {
 // ADD TASK (AJAX)
 // ======================
 @PostMapping
-public Task addTask(@RequestParam String title,
-                    @RequestParam String priority,
-                    Authentication authentication) {
+public Task addTask(@RequestBody Task task, Authentication authentication) {
 
     String username = authentication.getName();
     User user = userRepository.findByUsername(username).orElseThrow();
 
-    Task task = new Task();
-    task.setTitle(title);
-    task.setPriority(priority);
-    task.setCompleted(false);
     task.setUser(user);
+    task.setCompleted(false);
+    task.setStatus("TODO");
 
-    return taskRepository.save(task); // return JSON
+    return taskRepository.save(task);
 }
 
 }

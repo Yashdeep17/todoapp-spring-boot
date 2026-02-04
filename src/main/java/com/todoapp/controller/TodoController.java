@@ -89,6 +89,7 @@ public String addTodo(
 
     Task task = new Task(title, false, user);
     task.setPriority(priority);
+    task.setStatus("TODO");
     taskRepository.save(task);
 
     return "redirect:/todos";
@@ -152,18 +153,6 @@ private int priorityOrder(Task task) {
         case "LOW" -> 3;
         default -> 4;
     };
-}
-
-@PostMapping
-public void addTask(@RequestBody Task task, Authentication authentication) {
-
-    String username = authentication.getName();
-    User user = userRepository.findByUsername(username).orElseThrow();
-
-    task.setUser(user);
-    task.setCompleted(false);
-
-    taskRepository.save(task);
 }
 
 

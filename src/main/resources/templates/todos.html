@@ -48,19 +48,21 @@
 
 
             <!-- ADD TASK -->
-            <form id="addForm">
-                <input type="text" id="taskInput" placeholder="Add task..." required>
+            <form action="/todos" method="post">
+
+                <input type="text" name="title" required>
             
-                <select id="prioritySelect">
+                <select name="priority">
                     <option value="HIGH">🔴 High</option>
                     <option value="MEDIUM" selected>🟡 Medium</option>
                     <option value="LOW">🟢 Low</option>
                 </select>
             
                 <button type="submit">Add</button>
+            
             </form>
             
-
+                     
 
             <!-- SEARCH -->
             <input
