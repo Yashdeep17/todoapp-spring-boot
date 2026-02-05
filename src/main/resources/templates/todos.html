@@ -105,7 +105,11 @@
                     th:attr="data-id=${todo.id}"
                     th:class="'task-row ' + (${todo.completed} ? 'completed' : '')">
             
-                    <span class="task-title" th:text="${todo.title}"></span>
+                    <span class="task-title"
+      th:text="${todo.title}"
+      ondblclick="enableEdit(this)">
+</span>
+
             
                     <div class="task-actions">
             
@@ -118,8 +122,10 @@
                         </button>
             
                         <span th:text="${todo.priority}"
-                              th:class="'badge ' + ${todo.priority.toLowerCase()}">
-                        </span>
+      th:class="'badge ' + ${todo.priority.toLowerCase()}"
+      ondblclick="editPriority(this)">
+</span>
+
             
                     </div>
             

@@ -405,3 +405,128 @@ button:not(.icon-btn):hover {
 .active-sort {
     background: #3b82f6 !important;
 }
+
+/* ======================================
+   LIGHT MODE (DEFAULT)
+====================================== */
+
+body {
+    background: linear-gradient(135deg, #f6f8fb, #e9eef5);
+    color: #1f2937;
+}
+
+/* navbar */
+.navbar {
+    background: #ffffff;
+    color: #111;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* sidebar */
+.sidebar {
+    background: #ffffff;
+    color: #111;
+    border-right: 1px solid #e5e7eb;
+}
+
+/* cards */
+.container {
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* tasks */
+.task-row {
+    background: #f8fafc;
+    color: #111;
+}
+
+
+
+/* ======================================
+   🌙 DARK MODE
+====================================== */
+
+body.dark {
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e2e8f0;
+}
+
+/* navbar */
+body.dark .navbar {
+    background: #0b1220;
+    color: white;
+}
+
+/* sidebar */
+body.dark .sidebar {
+    background: #0f172a;
+    color: white;
+}
+
+/* glass card */
+body.dark .container {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* tasks */
+body.dark .task-row {
+    background: rgba(255,255,255,0.06);
+    color: white;
+}
+
+
+/* inputs */
+body.dark input,
+body.dark select {
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+}
+
+
+/* smooth transition */
+body,
+.container,
+.navbar,
+.sidebar,
+.task-row {
+    transition: all 0.3s ease;
+}
+
+/* ================================
+   INLINE EDIT INPUT
+================================ */
+
+.inline-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+body.dark .inline-input {
+    background: #1e293b;
+    color: white;
+}
+
+.inline-select {
+    background: #1e293b;
+    border: 1px solid #3b82f6;
+    color: white;
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+}
+
+.badge:hover {
+    cursor: pointer;
+    opacity: 0.85;
+}

@@ -64,4 +64,43 @@ public Task addTask(@RequestBody Task task, Authentication authentication) {
     return taskRepository.save(task);
 }
 
+@PutMapping("/{id}")
+public Task updateTask(@PathVariable Long id,
+                       @RequestParam String title,
+                       Authentication authentication) {
+
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
+
+    Task task = taskRepository.findById(id).orElseThrow();
+
+    if (!task.getUser().getId().equals(user.getId())) {
+        throw new RuntimeException("Unauthorized");
+    }
+
+    task.setTitle(title);
+
+    return taskRepository.save(task);
+}
+
+@PutMapping("/{id}/priority")
+public Task updatePriority(@PathVariable Long id,
+                           @RequestParam String priority,
+                           Authentication authentication) {
+
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username).orElseThrow();
+
+    Task task = taskRepository.findById(id).orElseThrow();
+
+    if (!task.getUser().getId().equals(user.getId())) {
+        throw new RuntimeException("Unauthorized");
+    }
+
+    task.setPriority(priority);
+
+    return taskRepository.save(task);
+}
+
+
 }
