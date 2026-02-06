@@ -186,7 +186,10 @@ function enableEdit(span) {
    PRIORITY INLINE EDIT ONLY
 ====================================== */
 
-function editPriority(badge) {
+function editPriority(e, badge) {
+
+    e.preventDefault();   // ⭐ stop text selection
+    e.stopPropagation();
 
     const row = badge.closest(".task-row");
     const id = row.dataset.id;
@@ -220,7 +223,7 @@ function editPriority(badge) {
             const newBadge = document.createElement("span");
             newBadge.className = "badge " + task.priority.toLowerCase();
             newBadge.innerText = task.priority;
-            newBadge.ondblclick = () => editPriority(newBadge);
+            newBadge.ondblclick = (ev) => editPriority(ev, newBadge);
 
             select.replaceWith(newBadge);
         });
@@ -228,10 +231,11 @@ function editPriority(badge) {
 
     select.onblur = save;
 
-    select.onkeydown = (e) => {
-        if (e.key === "Enter") save();
-        if (e.key === "Escape") select.replaceWith(badge);
+    select.onkeydown = (ev) => {
+        if (ev.key === "Enter") save();
+        if (ev.key === "Escape") select.replaceWith(badge);
     };
 }
+
 
 }

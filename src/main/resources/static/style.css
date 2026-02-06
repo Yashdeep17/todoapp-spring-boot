@@ -530,3 +530,7 @@ body.dark .inline-input {
     cursor: pointer;
     opacity: 0.85;
 }
+
+.badge {
+    user-select: none;   /* ⭐ stops text highlight */
+}
