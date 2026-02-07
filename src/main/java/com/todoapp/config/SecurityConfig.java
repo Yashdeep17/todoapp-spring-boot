@@ -54,5 +54,31 @@ public AuthenticationManager authenticationManager(
     return config.getAuthenticationManager();
 }
 
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login", "/register", "/auth.css").permitAll()
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/login")
+            .defaultSuccessUrl("/todos", true)
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutSuccessUrl("/login?logout")
+            .permitAll()
+        )
+        .rememberMe(remember -> remember
+            .key("uniqueAndSecretKey123")
+            .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
+        );
+
+    return http.build();
+}
+
+
 }
 

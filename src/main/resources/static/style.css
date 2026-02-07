@@ -534,3 +534,17 @@ body.dark .inline-input {
 .badge {
     user-select: none;   /* ⭐ stops text highlight */
 }
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 18px 0;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.remember-me input {
+    width: 16px;
+    height: 16px;
+}
