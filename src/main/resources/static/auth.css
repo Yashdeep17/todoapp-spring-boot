@@ -171,3 +171,31 @@ body {
         opacity: 1;
     }
 }
+
+/* ==============================
+   REMEMBER ME STYLING
+================================ */
+
+.remember-wrapper {
+    margin: 15px 0;
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+.remember-label input {
+    width: 16px;
+    height: 16px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+.remember-label:hover {
+    color: white;
+}

@@ -19,25 +19,37 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/login",
                     "/register",
+                    "/auth.css",
                     "/css/**",
-                    "/style.css"
+                    "/js/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/login")
-                .loginProcessingUrl("/login")   // 🔥 IMPORTANT
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/todos", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID", "remember-me")
+            )
+
+            .rememberMe(remember -> remember
+                .key("uniqueAndSecretKey123")
+                .tokenValiditySeconds(7 * 24 * 60 * 60)
             );
 
         return http.build();
@@ -47,38 +59,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
 }
 
-@Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-    http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/register", "/auth.css").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
-            .loginPage("/login")
-            .defaultSuccessUrl("/todos", true)
-            .permitAll()
-        )
-        .logout(logout -> logout
-            .logoutSuccessUrl("/login?logout")
-            .permitAll()
-        )
-        .rememberMe(remember -> remember
-            .key("uniqueAndSecretKey123")
-            .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
-        );
-
-    return http.build();
-}
-
-
-}
 
